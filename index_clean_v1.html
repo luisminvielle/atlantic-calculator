@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlantic.Net Server Cost Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: #64748b;
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f1f5f9;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .provider-card {
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .atlantic-card {
+            background: white;
+            border-color: #10b981;
+        }
+
+        .aws-card {
+            background: white;
+            border-color: #f59e0b;
+        }
+
+        .provider-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .monthly-cost {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .atlantic-card .monthly-cost {
+            color: #10b981;
+        }
+
+        .aws-card .monthly-cost {
+            color: #f59e0b;
+        }
+
+        .cost-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .savings-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .summary h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #0f172a;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .config-display {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .config-display h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+        }
+
+        .config-label {
+            color: #6b7280;
+        }
+
+        .config-value {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        @media (max-width: 768px) {
+            .calculator {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Server Cost Calculator</h1>
+            <p>Compare Atlantic.Net dedicated servers with AWS pricing</p>
+        </div>
+
+        <div class="calculator">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Server Specifications</h2>
+                </div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label for="cpu">CPU Cores</label>
+                        <select id="cpu">
+                            <option value="4">4 Cores</option>
+                            <option value="8" selected>8 Cores</option>
+                            <option value="16">16 Cores</option>
+                            <option value="32">32 Cores</option>
+                            <option value="64">64 Cores</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ram">RAM (GB)</label>
+                        <select id="ram">
+                            <option value="16">16 GB</option>
+                            <option value="32">32 GB</option>
+                            <option value="64" selected>64 GB</option>
+                            <option value="128">128 GB</option>
+                            <option value="256">256 GB</option>
+                            <option value="512">512 GB</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="storage">Storage (GB)</label>
+                        <select id="storage">
+                            <option value="500">500 GB SSD</option>
+                            <option value="1000" selected>1 TB SSD</option>
+                            <option value="2000">2 TB SSD</option>
+                            <option value="4000">4 TB SSD</option>
+                            <option value="8000">8 TB SSD</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bandwidth">Bandwidth (TB)</label>
+                        <select id="bandwidth">
+                            <option value="10">10 TB</option>
+                            <option value="20" selected>20 TB</option>
+                            <option value="50">50 TB</option>
+                            <option value="100">100 TB</option>
+                            <option value="unlimited">Unlimited</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <select id="location">
+                            <option value="us-east" selected>US East</option>
+                            <option value="us-west">US West</option>
+                            <option value="europe">Europe</option>
+                            <option value="asia">Asia Pacific</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>Cost Comparison</h2>
+                </div>
+                <div class="section-content">
+                    <div class="comparison">
+                        <div class="provider-card atlantic-card" style="position: relative;">
+                            <div class="provider-name">Atlantic.Net</div>
+                            <div class="monthly-cost" id="atlantic-cost">$265</div>
+                            <div class="cost-label">per month</div>
+                        </div>
+
+                        <div class="provider-card aws-card" style="position: relative;">
+                            <div class="provider-name">AWS</div>
+                            <div class="monthly-cost" id="aws-cost">$358</div>
+                            <div class="cost-label">per month</div>
+                            <div class="savings-badge">+35%</div>
+                        </div>
+                    </div>
+
+                    <div class="summary">
+                        <h3>Total Cost Analysis</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-label">Annual Savings</div>
+                                <div class="summary-value" id="annual-savings">$1,116</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">3-Year Savings</div>
+                                <div class="summary-value" id="three-year-savings">$3,348</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="config-display">
+                        <h4>Your Configuration</h4>
+                        <div class="config-grid">
+                            <div class="config-item">
+                                <span class="config-label">CPU:</span>
+                                <span class="config-value" id="display-cpu">8 Cores</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">RAM:</span>
+                                <span class="config-value" id="display-ram">64 GB</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Storage:</span>
+                                <span class="config-value" id="display-storage">1 TB SSD</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Bandwidth:</span>
+                                <span class="config-value" id="display-bandwidth">20 TB</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Location:</span>
+                                <span class="config-value" id="display-location">US East</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base pricing components
+        const pricing = {
+            cpu: { base: 25, perCore: 8 },
+            ram: { base: 15, perGB: 2 },
+            storage: { base: 30, perTB: 45 },
+            bandwidth: { base: 20, per10TB: 15, unlimited: 150 },
+            location: {
+                'us-east': 1.0,
+                'us-west': 1.05,
+                'europe': 1.2,
+                'asia': 1.15
+            }
+        };
+
+        // DOM elements
+        const elements = {
+            cpu: document.getElementById('cpu'),
+            ram: document.getElementById('ram'),
+            storage: document.getElementById('storage'),
+            bandwidth: document.getElementById('bandwidth'),
+            location: document.getElementById('location'),
+            atlanticCost: document.getElementById('atlantic-cost'),
+            awsCost: document.getElementById('aws-cost'),
+            annualSavings: document.getElementById('annual-savings'),
+            threeYearSavings: document.getElementById('three-year-savings'),
+            displayCpu: document.getElementById('display-cpu'),
+            displayRam: document.getElementById('display-ram'),
+            displayStorage: document.getElementById('display-storage'),
+            displayBandwidth: document.getElementById('display-bandwidth'),
+            displayLocation: document.getElementById('display-location')
+        };
+
+        // Event listeners
+        Object.values(elements).forEach(element => {
+            if (element && element.id !== 'atlantic-cost' && element.id !== 'aws-cost' &&
+                element.id !== 'annual-savings' && element.id !== 'three-year-savings' &&
+                element.id.includes('display-') === false) {
+                element.addEventListener('change', calculateCosts);
+            }
+        });
+
+        function calculateCosts() {
+            // Get current values
+            const cpuCores = parseInt(elements.cpu.value);
+            const ramGB = parseInt(elements.ram.value);
+            const storageGB = parseInt(elements.storage.value);
+            const bandwidthTB = elements.bandwidth.value;
+            const location = elements.location.value;
+
+            // Calculate costs
+            let baseCost = 99; // Base server cost
+            let cpuCost = pricing.cpu.base + (cpuCores * pricing.cpu.perCore);
+            let ramCost = pricing.ram.base + (ramGB * pricing.ram.perGB);
+            let storageCost = pricing.storage.base + Math.ceil(storageGB / 1000) * pricing.storage.perTB;
+            let bandwidthCost = bandwidthTB === 'unlimited' ?
+                pricing.bandwidth.unlimited :
+                pricing.bandwidth.base + (Math.ceil(parseInt(bandwidthTB) / 10) * pricing.bandwidth.per10TB);
+
+            let locationMultiplier = pricing.location[location];
+            let atlanticTotal = (baseCost + cpuCost + ramCost + storageCost + bandwidthCost) * locationMultiplier;
+
+            // AWS is 35% more expensive
+            let awsTotal = atlanticTotal * 1.35;
+
+            // Update display
+            elements.atlanticCost.textContent = `$${Math.round(atlanticTotal)}`;
+            elements.awsCost.textContent = `$${Math.round(awsTotal)}`;
+
+            // Calculate savings
+            let annualAtlantic = atlanticTotal * 12;
+            let annualAws = awsTotal * 12;
+            let annualSavings = annualAws - annualAtlantic;
+            let threeYearSavings = annualSavings * 3;
+
+            elements.annualSavings.textContent = `$${Math.round(annualSavings)}`;
+            elements.threeYearSavings.textContent = `$${Math.round(threeYearSavings)}`;
+
+            // Update specs display
+            elements.displayCpu.textContent = `${cpuCores} Cores`;
+            elements.displayRam.textContent = `${ramGB} GB`;
+            elements.displayStorage.textContent = storageGB >= 1000 ? `${storageGB / 1000} TB SSD` : `${storageGB} GB SSD`;
+            elements.displayBandwidth.textContent = bandwidthTB === 'unlimited' ? 'Unlimited' : `${bandwidthTB} TB`;
+            elements.displayLocation.textContent = location.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        // Initial calculation
+        calculateCosts();
+    </script>
+</body>
+</html>
